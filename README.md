@@ -9,6 +9,8 @@ Kullanımı
 ====================
 
 ```
+<?php
+
 // ana kategoriler
 Sahibinden::Kategori();
 
