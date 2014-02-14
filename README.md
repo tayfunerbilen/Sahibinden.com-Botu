@@ -11,6 +11,9 @@ Kullanımı
 ```
 <?php
 
+header('Content-type: text/html; charset=utf8');
+require 'sahibinden.class.php';
+
 // ana kategoriler
 Sahibinden::Kategori();
 
