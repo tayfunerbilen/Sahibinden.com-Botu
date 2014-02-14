@@ -51,7 +51,6 @@ class Sahibinden
                     'url' => 'http://www.sahibinden.com' . $result[1][$key]
                 );
             }
-            return self::$data;
         } else {
             $open = self::Curl('http://www.sahibinden.com/');
             preg_match_all('/<a class="mainCategory" title="(.*?)" href="(.*?)">(.*?)<\/a>/', $open, $result);
@@ -62,8 +61,8 @@ class Sahibinden
                     'url' => 'http://www.sahibinden.com' . $result[2][$key]
                 );
             }
-            return self::$data;
         }
+        return self::$data;
     }
 
     /**
