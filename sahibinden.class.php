@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Class Sahibinden
+ * @author Tayfun Erbilen
+ * @blog http://www.erbilen.net
+ * @mail tayfunerbilen@gmail.com
+ * @date 14.2.2014
+ */
 class Sahibinden
 {
 
@@ -87,9 +94,8 @@ class Sahibinden
     static function Detay($url = NULL)
     {
         if ($url != NULL) {
-            $open = self::Curl($url, '193.203.220.15:8080');
-            preg_match_all('/<title>(.*?)<\/title>/', $open, $result);
-            print_r($result);
+            $open = self::Curl($url);
+            // devam edecek
         };
     }
 
