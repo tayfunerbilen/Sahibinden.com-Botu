@@ -53,7 +53,7 @@ class Sahibinden
             }
             return self::$data;
         } else {
-            $open = self::curl('http://www.sahibinden.com/');
+            $open = self::Curl('http://www.sahibinden.com/');
             preg_match_all('/<a class="mainCategory" title="(.*?)" href="(.*?)">(.*?)<\/a>/', $open, $result);
             foreach ($result[3] as $key => $val) {
                 self::$data[] = array(
