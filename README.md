@@ -8,7 +8,7 @@ Proxy sorununu çözemedim henüz, pek işe yaradığını söyleyemem mevcut pr
 Kullanımı
 ====================
 
-```
+```php
 <?php
 
 header('Content-type: text/html; charset=utf8');
