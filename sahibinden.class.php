@@ -14,23 +14,31 @@ class Sahibinden
 
     private function Curl($url, $proxy = NULL)
     {
-        $options = Array(
-            CURLOPT_RETURNTRANSFER => TRUE,
-            // CURLOPT_FOLLOWLOCATION => TRUE,
-            CURLOPT_REFERER => 'http://www.google.com/?q=Sahibinden #'.rand(0,9999999999),
-            CURLOPT_CONNECTTIMEOUT => 120,
-            CURLOPT_TIMEOUT => 120,
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'],
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPPROXYTUNNEL => 0,
-            CURLOPT_PROXY => $proxy
+        $options = array (CURLOPT_RETURNTRANSFER => true, // return web page
+            CURLOPT_HEADER => false, // don't return headers
+            //CURLOPT_FOLLOWLOCATION => true, // follow redirects
+            CURLOPT_ENCODING => "", // handle compressed
+            CURLOPT_USERAGENT => "test", // who am i
+            CURLOPT_AUTOREFERER => true, // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 30, // timeout on connect
+            CURLOPT_TIMEOUT => 30, // timeout on response
+            CURLOPT_MAXREDIRS => 10, // stop after 10 redirects
+            CURLOPT_SSL_VERIFYPEER => false     // Disabled SSL Cert checks
         );
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return str_replace(array("\n", "\r", "\t"), NULL, $data);
+        $ch = curl_init ( $url );
+        curl_setopt_array ( $ch, $options );
+        $content = curl_exec ( $ch );
+        $err = curl_errno ( $ch );
+        $errmsg = curl_error ( $ch );
+        $header = curl_getinfo ( $ch );
+
+        curl_close ( $ch );
+
+        $header['errno'] = $err;
+        $header['errmsg'] = $errmsg;
+        $header['content'] = $content;
+
+        return str_replace(array("\n", "\r", "\t"), NULL, $header['content']);
     }
 
     /**
