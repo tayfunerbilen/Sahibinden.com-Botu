@@ -135,9 +135,7 @@ class Sahibinden
             );
 
             // username
-            preg_match('/<div class="classifiedUserBox">(.*?)<\/div>/', $open, $user_info);
-            $user_info = $user_info[1];
-            preg_match('/<h5>(.*?)<\/h5>/', $user_info, $username);
+            preg_match('/<h5>(.*?)<\/h5>/', $open, $username);
             $username = $username[1];
 
             // contact info
