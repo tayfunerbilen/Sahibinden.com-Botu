@@ -1,9 +1,11 @@
 Hakkında
 ====================
 
-Sahibinden.com için php ile bot hazırladım. Henüz tamamlanmadı, dileyenler alıp kendileri de geliştirmeye devam edebilirler.
+Sahibinden.com için php ile bot hazırladım. Dileyenler alıp kendileri de geliştirmeye devam edebilirler.
 
-Proxy sorununu çözemedim henüz, pek işe yaradığını söyleyemem mevcut proxy'nin :)
+Şuan güzel bir şekilde, kategorileri alt kategorileri vs. kategori listelerini ve detaylarını çekmektedir.
+
+Kullanımı da oldukça basit, aşağıdan bakabilirsiniz.
 
 Kullanımı
 ====================
