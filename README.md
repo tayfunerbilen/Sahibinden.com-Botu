@@ -27,10 +27,10 @@ print_r( Sahibinden::Liste('emlak') );
 // Sahibinden::Liste('emlak', 20); // 2. sayfa
 
 // Mağaza içerikleri
-/*
-Sahibinden::magListe('mağaza adi');
-Sahibinden::magListe('mağaza adi', 20); // 2. sayfa
-*/
+
+print_r(Sahibinden::magListe('mağaza adi'));
+// Sahibinden::magListe('mağaza adi', 20); // 2. sayfa
+
 
 // içerik detayı
 print_r( Sahibinden::Detay('http://www.sahibinden.com/ilan/emlak-konut-satilik-dorlion-gayrimenkul-den-yildiztepe-de-sifir-bina-da-2-plus1-153319984/detay') );
