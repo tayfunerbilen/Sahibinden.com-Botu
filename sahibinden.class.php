@@ -68,6 +68,47 @@ class Sahibinden
         }
         return $items;
     }
+	
+	
+	
+	/**
+     * Mağazaya ait ilanları listeler.
+     *
+     * @param $mag (Mağaza Adı)
+     * @param string $sayfa
+     * @return array
+     */
+    static function magListe($mag,$sayfa = '1')
+    {
+        $items = array ();
+       
+        $open = self::Curl( 'http://'.$mag.'.sahibinden.com/');
+			preg_match( '/<a href="\/index\.php\?aff=(.*?)">/', $open, $slink );
+			preg_match( '/aramanızda <span>(.*?)<\/span> adet/', $open, $adet);
+			$slink = "http://".$mag.".sahibinden.com/index.php?aff=".$slink[1];
+			$slink = str_replace("[page]=2","[page]=".$sayfa,$slink);
+			
+		$open = self::Curl($slink);
+		
+        preg_match_all( '/<td width="50%" id="row_(.*?)"><table(.*?)<\/td></', $open, $result );
+        foreach ( $result[ 2 ] as $detay ) {
+			preg_match( '/<\/div>(.*?)<a href="(.*?)">(.*?)<\/a> &nbsp;<a/', $detay, $link );
+            preg_match( '/<img src="ht(.*?)" width="100" height="75" border="0">/', $detay, $image );
+			
+ 
+            $items[ ] = array (
+                'image' => "ht".$image[ 1 ],
+				'title' => $link[3],
+				'url' => $link[2],
+				'toplamSayfa' => ceil($adet[1]/20)
+			
+            );
+        }
+        return  $items;
+    }
+
+
+	
 
     /**
      * İlan detaylarını listeler.
