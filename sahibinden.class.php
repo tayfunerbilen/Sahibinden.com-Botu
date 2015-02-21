@@ -1,11 +1,11 @@
 <?php
-
 /**
  * Class Sahibinden
  * @author Tayfun Erbilen
  * @blog http://www.erbilen.net
  * @mail tayfunerbilen@gmail.com
  * @date 14.2.2014
+ * @update ulusanyazilim@gmail.com
  */
 class Sahibinden
 {
@@ -18,28 +18,35 @@ class Sahibinden
      * @param null $url
      * @return array
      */
-    static function Kategori( $url = NULL )
+    public static function Kategori( $url = NULL )
     {
         if ( $url != NULL ) {
-            $open = self::Curl( 'http://www.sahibinden.com/alt-kategori/' . $url );
-            preg_match_all( '/<div> <a href="(.*?)">(.*?)<\/a> <span>\((.*?)\)<\/span> <\/div>/', $open, $result );
-            foreach ( $result[ 2 ] as $key => $val ) {
-                self::$data[ ] = array (
-                    'title' => $val,
-                    'uri' => trim( str_replace( '/kategori/', '', $result[ 1 ][ $key ] ), '/' ),
-                    'url' => 'http://www.sahibinden.com' . $result[ 1 ][ $key ]
-                );
-            }
-        } else {
-            $open = self::Curl( 'http://www.sahibinden.com/' );
-            preg_match_all( '/<a class="mainCategory" title="(.*?)" href="(.*?)">(.*?)<\/a>/', $open, $result );
-            foreach ( $result[ 3 ] as $key => $val ) {
-                self::$data[ ] = array (
-                    'title' => $val,
-                    'uri' => str_replace( '/kategori/', '', $result[ 2 ][ $key ] ),
-                    'url' => 'http://www.sahibinden.com' . $result[ 2 ][ $key ]
-                );
-            }
+            $duzen='@<div id="searchCategoryContainer"(.*?)<\/div>@';
+			$ac = self::Curl("http://www.sahibinden.com/".$url);
+			preg_match($duzen,$ac,$sonuc);
+			$duzen='@<li class="c(.*?)<a href="/(.*?)">(.*?)<\/a>(.*?)<span>\((.*?)\)<\/span>(.*?)li>@';   
+			preg_match_all($duzen,$sonuc[0],$sonuc);
+			foreach($sonuc[3] as $anahtar=>$deger){
+				self::$data[]=array(
+					"baslik"=>$deger,
+					"sef" => $sonuc[2][$anahtar],  
+					"ilan" => $sonuc[5][$anahtar],  
+					"url"=>"http://www.sahibinden.com/".$sonuc[2][$anahtar]
+				);
+			}
+        }else{
+            $ac = self::Curl( 'http://www.sahibinden.com/' );
+			$duzen='/<(.*?)mainCategory"(.*?)href="\/(.*?)">(.*?)<\/a>(.*?)<span(.*?)\((.*?)\)<\/span>/';
+            preg_match_all($duzen,$ac,$sonuc);
+            foreach ($sonuc[4] as $anahtar=>$deger){
+				$sef=str_replace("kategori/","",$sonuc[3][$anahtar]);
+				self::$data[ ]=array(
+					"baslik"=>$deger,
+					"sef" => $sef,  
+					"ilan" => $sonuc[7][$anahtar],  
+					"url"=>"http://www.sahibinden.com/".$sef
+				);
+			}
         }
         return self::$data;
     }
@@ -171,7 +178,7 @@ class Sahibinden
      * @param $string
      * @return string
      */
-    private function replaceSpace( $string )
+    private static function replaceSpace( $string )
     {
         $string = preg_replace( "/\s+/", " ", $string );
         $string = trim( $string );
@@ -179,36 +186,17 @@ class Sahibinden
     }
 
     /**
+	 * Uzaktan site içeriğini alır.
+	 *
      * @param $url
-     * @param null $proxy
-     * @return mixed
+     * @return string
      */
-    private function Curl( $url, $proxy = NULL )
-    {
-        $options = array ( CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => false,
-            CURLOPT_ENCODING => "",
-            CURLOPT_AUTOREFERER => true,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_SSL_VERIFYPEER => false
-        );
-
-        $ch = curl_init( $url );
-        curl_setopt_array( $ch, $options );
-        $content = curl_exec( $ch );
-        $err = curl_errno( $ch );
-        $errmsg = curl_error( $ch );
-        $header = curl_getinfo( $ch );
-
-        curl_close( $ch );
-
-        $header[ 'errno' ] = $err;
-        $header[ 'errmsg' ] = $errmsg;
-        $header[ 'content' ] = $content;
-
-        return str_replace( array ( "\n", "\r", "\t" ), NULL, $header[ 'content' ] );
+    private static function Curl($url){
+        $ch=curl_init($url);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true); 
+		$icerik=curl_exec($ch);
+		curl_close($ch);
+		return str_replace(array("\n"),"",$icerik);
     }
 
 }
