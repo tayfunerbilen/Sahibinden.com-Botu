@@ -6,6 +6,8 @@
  * @blog http://www.erbilen.net
  * @mail tayfunerbilen@gmail.com
  * @date 14.2.2014
+ * @update 9.8.2018
+ * @updater_mail facfur3@gmail.com
  */
 class Sahibinden
 {
@@ -21,23 +23,28 @@ class Sahibinden
     static function Kategori( $url = NULL )
     {
         if ( $url != NULL ) {
-            $open = self::Curl( 'http://www.sahibinden.com/alt-kategori/' . $url );
-            preg_match_all( '/<div> <a href="(.*?)">(.*?)<\/a> <span>\((.*?)\)<\/span> <\/div>/', $open, $result );
-            foreach ( $result[ 2 ] as $key => $val ) {
+            $open = self::Curl( 'https://www.sahibinden.com/alt-kategori/' . $url );
+            preg_match_all('@<li>(.*?)<a href="/(.*?)">(.*?)</a>(.*?)<span>(.*?)</span>(.*?)</li>@si',$open, $result);
+            unset($result[2][0]);unset($result[3][0]);unset($result[5][0]);
+            for ($i=0; $i <count($result[2]) ; $i++) { 
                 self::$data[ ] = array (
-                    'title' => $val,
-                    'uri' => trim( str_replace( '/kategori/', '', $result[ 1 ][ $key ] ), '/' ),
-                    'url' => 'http://www.sahibinden.com' . $result[ 1 ][ $key ]
+                    'title' => $result[3][$i],
+                    'icerik' => trim($result[5][$i]),
+                    'uri' => trim($result[ 2 ][ $i ]),
+                    'url' => 'https://www.sahibinden.com/' . $result[ 2 ][ $i ]
                 );
             }
-        } else {
-            $open = self::Curl( 'http://www.sahibinden.com/' );
-            preg_match_all( '/<a class="mainCategory" title="(.*?)" href="(.*?)">(.*?)<\/a>/', $open, $result );
-            foreach ( $result[ 3 ] as $key => $val ) {
+        }
+
+        else {
+            $open = self::Curl( 'https://www.sahibinden.com/' );
+            preg_match_all( '@<li class="">(.*?)<a href="/kategori/(.*?)">(.*?)</a>(.*?)<span>((.*?))(.*?)</span>(.*?)</li>@si', $open, $result );
+            foreach ( $result[ 2 ] as $key => $val ) {
                 self::$data[ ] = array (
-                    'title' => $val,
+                    'title' => trim($result[3][$key]),
+                    'icerik' => trim($result[7][$key]),
                     'uri' => str_replace( '/kategori/', '', $result[ 2 ][ $key ] ),
-                    'url' => 'http://www.sahibinden.com' . $result[ 2 ][ $key ]
+                    'url' => 'https://www.sahibinden.com/kategori/' . $result[ 2 ][ $key ]
                 );
             }
         }
@@ -55,15 +62,15 @@ class Sahibinden
     {
         $items = array ();
         $page = '?pagingOffset=' . $sayfa;
-        $open = self::Curl( 'http://www.sahibinden.com/' . $kategoriLink . $page );
-        preg_match_all( '/<tr class="searchResultsItem(.*?)">(.*?)<\/tr>/', $open, $result );
+        $open = self::Curl('https://www.sahibinden.com/'.$kategoriLink .$page );
+        preg_match_all( '@<tr data-id="(.*?)" class="searchResultsItem(.*?)">(.*?)</tr>@si', $open, $result );
         foreach ( $result[ 2 ] as $detay ) {
-            preg_match( '/<img src="(.*?)" alt="(.*?)" title="(.*?)"\/>/', $detay, $image );
-            preg_match( '/<a class="classifiedTitle" href="(.*?)">(.*?)<\/a>/', $detay, $title );
+            preg_match( '@<img src="(.*?)" alt="(.*?)" title="(.*?)"/>@si', $open, $image );
+            preg_match( '/<a class="classifiedTitle" href="(.*?)">(.*?)<\/a>/', $open, $title );
             $items[ ] = array (
                 'image' => $image[ 1 ],
                 'title' => self::replaceSpace($image[ 3 ] ? $image[ 3 ] : trim( $title[ 2 ] )),
-                'url' => 'http://www.sahibinden.com' . $title[ 1 ]
+                'url' => 'https://www.sahibinden.com' . $title[ 1 ]
             );
         }
         return $items;
@@ -86,7 +93,7 @@ class Sahibinden
             $title = $titles[1][0];
 
             // images
-            preg_match_all( '/<li>                        <img src="(.*?)" data-source="(.*?)" alt="(.*?)"\/>                    <\/li>/', $open, $imgs );
+            preg_match_all( '@<img src="(.*?)" data-src="(.*?)" alt="(.*?)"/>@si', $open, $imgs );
             foreach ( $imgs[ 1 ] as $index => $val ) {
                 $images[ ] = array (
                     'thumb' => $val,
@@ -127,11 +134,11 @@ class Sahibinden
             preg_match('/<h3>(.*?)<\/h3>/', $extras, $price);
             $price = trim($price[1]);
 
-            preg_match_all('/<a href="(.*?)">(.*?)<\/a>/', $extras, $addrs);
+            preg_match_all('@<a href="/(.*?)">(.*?)</a>@si', $open, $addrs);
             $address = array(
-                'il' => $addrs[2][0],
-                'ilce' => $addrs[2][1],
-                'mahalle' => $addrs[2][2]
+                'il' => trim($addrs[2][0]),
+                'ilce' => trim($addrs[2][1]),
+                'mahalle' => trim($addrs[2][2])
             );
 
             // username
@@ -139,12 +146,11 @@ class Sahibinden
             $username = $username[1];
 
             // contact info
-            preg_match('/<ul class="userContactInfo">(.*?)<\/ul>/', $open, $contact_info);
+            preg_match('/<ul id="phoneInfoPart" class="userContactInfo">(.*?)<\/ul>/', $open, $contact_info);
             $contact_info = self::replaceSpace($contact_info[1]);
-            preg_match_all('/<li> <strong>(.*?)<\/strong> <span>(.*?)<\/span> <\/li>/', $contact_info, $contact);
-
-            foreach ( $contact[2] as $index => $val ){
-                $contacts[$contact[1][$index]] = $val;
+            preg_match_all('@<strong(.*?)>(.*?)</strong>(.*?)<span class="(.*?)">(.*?)</span>@si', $contact_info, $contact);
+            foreach ( $contact[5] as $index => $val ){
+                $contacts[$contact[2][$index]] = $val;
             }
             $data = array(
                 'title' => $title,
@@ -195,12 +201,14 @@ class Sahibinden
             CURLOPT_SSL_VERIFYPEER => false
         );
 
-        $ch = curl_init( $url );
+        $ch = curl_init("$url");
         curl_setopt_array( $ch, $options );
         $content = curl_exec( $ch );
         $err = curl_errno( $ch );
         $errmsg = curl_error( $ch );
         $header = curl_getinfo( $ch );
+
+
 
         curl_close( $ch );
 
