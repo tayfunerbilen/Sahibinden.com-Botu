@@ -177,7 +177,7 @@ class Sahibinden
      * @param $string
      * @return string
      */
-    private function replaceSpace( $string )
+    private static function replaceSpace( $string )
     {
         $string = preg_replace( "/\s+/", " ", $string );
         $string = trim( $string );
@@ -189,7 +189,7 @@ class Sahibinden
      * @param null $proxy
      * @return mixed
      */
-    private function Curl( $url, $proxy = NULL )
+    private static function Curl( $url, $proxy = NULL )
     {
         $options = array ( CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => false,
