@@ -101,8 +101,8 @@ class Sahibinden
                 );
             }
 
-            // açıklama
-            preg_match_all( '/<div id="classifiedDescription" class="uiBoxContainer">(.*?)<\/div>/', $open, $desc );
+           // açıklama
+            preg_match_all( '/<div id="classifiedDescription" class="uiBoxContainer">(.*?)<\/div><div class="uiBox">/', $open, $desc );
             $description = array (
                 'html' => self::replaceSpace($desc[ 1 ][ 0 ]),
                 'no_html' => self::replaceSpace(strip_tags( $desc[ 1 ][ 0 ] ))
